@@ -1,0 +1,55 @@
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
+      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
+        项目截图
+      </div>
+      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称一</h3>
+      <p class="text-sm text-black/60 leading-relaxed mb-4">
+        一个帮助用户管理日常任务的轻量工具，支持离线使用与数据同步。
+      </p>
+      <div class="flex flex-wrap gap-2 mb-5">
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">React</span>
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">TypeScript</span>
+      </div>
+      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
+        查看详情 <span>→</span>
+      </a>
+    </article>
+
+    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
+      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
+        项目截图
+      </div>
+      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称二</h3>
+      <p class="text-sm text-black/60 leading-relaxed mb-4">
+        面向内容创作者的写作平台，支持 Markdown 编辑与一键发布。
+      </p>
+      <div class="flex flex-wrap gap-2 mb-5">
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Vue</span>
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Node.js</span>
+      </div>
+      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
+        查看详情 <span>→</span>
+      </a>
+    </article>
+
+    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
+      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
+        项目截图
+      </div>
+      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称三</h3>
+      <p class="text-sm text-black/60 leading-relaxed mb-4">
+        一个开源的数据可视化组件库，提供简洁的 API 与高度可定制主题。
+      </p>
+      <div class="flex flex-wrap gap-2 mb-5">
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">JavaScript</span>
+        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Canvas</span>
+      </div>
+      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
+        查看详情 <span>→</span>
+      </a>
+    </article>
+
+  </div>
+</div>
