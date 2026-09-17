@@ -1,55 +1,287 @@
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>符竣 | 个人名片</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at 30% 20%, #2a1040 0%, #12071f 45%, #05020a 100%);
+    color: #f5f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+  /* 紫金花纹装饰 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(212,175,55,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(160,80,220,0.15) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,215,130,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* 金色细线纹理 */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg, rgba(212,175,55,0.04) 0px, rgba(212,175,55,0.04) 1px, transparent 1px, transparent 14px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .card {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    width: 100%;
+    background: linear-gradient(160deg, rgba(35,15,55,0.9), rgba(10,5,20,0.95));
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 28px;
+    padding: 40px 28px 36px;
+    text-align: center;
+    box-shadow:
+      0 0 0 1px rgba(212,175,55,0.1),
+      0 30px 80px rgba(80,20,140,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+  }
+  .cover-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 28px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .vinyl {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, #1a0a2e 0%, #0a0512 40%, #1a0a2e 60%, #05020a 100%);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.3), 0 20px 50px rgba(0,0,0,0.8), inset 0 0 60px rgba(160,80,220,0.25);
+    animation: spin 12s linear infinite;
+    animation-play-state: paused;
+    transition: box-shadow 0.3s;
+  }
+  .vinyl::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(212,175,55,0.15);
+    box-shadow: inset 0 0 0 1px rgba(212,175,55,0.08);
+  }
+  .vinyl::after {
+    content: "";
+    position: absolute;
+    inset: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(212,175,55,0.12);
+  }
+  .vinyl.playing {
+    animation-play-state: running;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.35), 0 20px 50px rgba(0,0,0,0.8);
+  }
+  .cover {
+    position: absolute;
+    inset: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(212,175,55,0.5);
+    box-shadow: 0 0 30px rgba(160,80,220,0.5);
+    background: #1a0a2e url('IMG_20260917_212009.png') center/cover no-repeat;
+    z-index: 2;
+    transition: transform 0.3s;
+  }
+  .cover-wrap:hover .cover { transform: scale(1.03); }
+  .center-hole {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 14px; height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: #05020a;
+    border: 2px solid rgba(212,175,55,0.6);
+    z-index: 3;
+  }
+  .play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 26px;
+    padding: 9px 22px;
+    border-radius: 999px;
+    border: 1px solid rgba(212,175,55,0.4);
+    background: rgba(212,175,55,0.08);
+    color: #e8d5a0;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .play-btn:hover { background: rgba(212,175,55,0.2); border-color: rgba(212,175,55,0.8); }
+  .play-btn .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #d4af37;
+    box-shadow: 0 0 10px #d4af37;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #f5e6b8, #d4af37, #f5e6b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .title {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: rgba(212,175,55,0.75);
+    margin-bottom: 22px;
+    text-transform: uppercase;
+  }
+  .divider {
+    width: 60px;
+    height: 1px;
+    margin: 0 auto 22px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  }
+  .bio {
+    font-size: 14px;
+    color: rgba(245,240,232,0.75);
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    padding: 0 6px;
+    line-height: 1.9;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .links a {
+    display: block;
+    padding: 12px 20px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 14px;
+    color: #e8d5a0;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 2px;
+    transition: all 0.25s ease;
+    background: rgba(212,175,55,0.04);
+  }
+  .links a:hover {
+    background: rgba(212,175,55,0.18);
+    border-color: #d4af37;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(160,80,220,0.3);
+  }
+  .footer {
+    margin-top: 28px;
+    font-size: 11px;
+    color: rgba(212,175,55,0.35);
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
 
-    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
-      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
-        项目截图
-      </div>
-      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称一</h3>
-      <p class="text-sm text-black/60 leading-relaxed mb-4">
-        一个帮助用户管理日常任务的轻量工具，支持离线使用与数据同步。
-      </p>
-      <div class="flex flex-wrap gap-2 mb-5">
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">React</span>
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">TypeScript</span>
-      </div>
-      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
-        查看详情 <span>→</span>
-      </a>
-    </article>
+  <div class="card">
+    <!-- 唱片封面，点击播放/暂停音乐 -->
+    <div class="cover-wrap" id="coverWrap">
+      <div class="vinyl" id="vinyl"></div>
+      <div class="cover"></div>
+      <div class="center-hole"></div>
+    </div>
 
-    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
-      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
-        项目截图
-      </div>
-      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称二</h3>
-      <p class="text-sm text-black/60 leading-relaxed mb-4">
-        面向内容创作者的写作平台，支持 Markdown 编辑与一键发布。
-      </p>
-      <div class="flex flex-wrap gap-2 mb-5">
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Vue</span>
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Node.js</span>
-      </div>
-      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
-        查看详情 <span>→</span>
-      </a>
-    </article>
+    <div class="play-btn" id="playBtn">
+      <span class="dot"></span>
+      <span id="playText">点击播放</span>
+    </div>
 
-    <article class="group border border-black/10 rounded-2xl p-6 hover:border-black/40 transition">
-      <div class="aspect-[4/3] bg-black/5 rounded-xl mb-5 flex items-center justify-center text-black/20 text-xs">
-        项目截图
-      </div>
-      <h3 class="text-lg font-semibold tracking-tight mb-2">项目名称三</h3>
-      <p class="text-sm text-black/60 leading-relaxed mb-4">
-        一个开源的数据可视化组件库，提供简洁的 API 与高度可定制主题。
-      </p>
-      <div class="flex flex-wrap gap-2 mb-5">
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">JavaScript</span>
-        <span class="px-2.5 py-0.5 text-[11px] border border-black/10 rounded-full text-black/50">Canvas</span>
-      </div>
-      <a href="#" class="inline-flex items-center text-sm font-medium group-hover:gap-2 gap-1 transition-all">
-        查看详情 <span>→</span>
-      </a>
-    </article>
+    <h1 class="name">符竣</h1>
+    <p class="title">一名跨境电商新生</p>
 
+    <div class="divider"></div>
+
+    <p class="bio">
+      在代码与音符之间游走，<br />
+      用热爱构建属于自己的宇宙。
+    </p>
+
+    <div class="links">
+      <a href="mailto:hello@example.com">✉ 邮箱联系</a>
+      <a href="https://github.com/F337373" target="_blank" rel="noopener">◆ GitHub</a>
+      <a href="https://x.com/" target="_blank" rel="noopener">◆ X / Twitter</a>
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">◆ LinkedIn</a>
+    </div>
+
+    <div class="footer">© <span id="year"></span> 你的名字</div>
   </div>
-</div>
+
+  <!-- 音乐文件引用仓库里的 mp3 -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="方大同 - 特别的人.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const music = document.getElementById('bgMusic');
+    const vinyl = document.getElementById('vinyl');
+    const playBtn = document.getElementById('playBtn');
+    const playText = document.getElementById('playText');
+    const coverWrap = document.getElementById('coverWrap');
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+        vinyl.classList.remove('playing');
+        playText.textContent = '点击播放';
+        isPlaying = false;
+      } else {
+        music.play().then(() => {
+          vinyl.classList.add('playing');
+          playText.textContent = '正在播放';
+          isPlaying = true;
+        }).catch((err) => {
+          alert('音乐需要您手动允许播放。请检查文件是否上传正确。');
+          console.log(err);
+        });
+      }
+    }
+
+    playBtn.addEventListener('click', toggleMusic);
+    coverWrap.addEventListener('click', toggleMusic);
+  </script>
+
+</body>
