@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>符竣 | 个人名片</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at 50% 0%, #2a1040 0%, #12071f 50%, #05020a 100%);
+    color: #f5f0e8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; user-select: none; position: relative;
+  }
+
+  /* ========== 紫金壮锦底纹 ========== */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(212,175,55,0.08) 0px, rgba(212,175,55,0.08) 2px, transparent 2px, transparent 40px),
+      repeating-linear-gradient(-45deg, rgba(212,175,55,0.08) 0px, rgba(212,175,55,0.08) 2px, transparent 2px, transparent 40px),
+      repeating-linear-gradient(0deg, rgba(212,175,55,0.04) 0px, rgba(212,175,55,0.04) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(90deg, rgba(212,175,55,0.04) 0px, rgba(212,175,55,0.04) 1px, transparent 1px, transparent 20px),
+      radial-gradient(circle at 15% 85%, rgba(212,175,55,0.1) 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(160,80,220,0.18) 0%, transparent 45%);
+    opacity: 0.9;
+  }
+
+  /* 金色四角花纹 */
+  .corner { position: fixed; width: 60px; height: 60px; z-index: 2; pointer-events: none; border-color: rgba(212,175,55,0.5); }
+  .corner-tl { top: 16px; left: 16px; border-top: 2px solid; border-left: 2px solid; }
+  .corner-tr { top: 16px; right: 16px; border-top: 2px solid; border-right: 2px solid; }
+  .corner-bl { bottom: 16px; left: 16px; border-bottom: 2px solid; border-left: 2px solid; }
+  .corner-br { bottom: 16px; right: 16px; border-bottom: 2px solid; border-right: 2px solid; }
+
+  .stage { position: relative; z-index: 5; width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; padding: 30px 24px; }
+  .slides { position: relative; flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.7s ease; pointer-events: none; }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 2; }
+
+  .art-wrap {
+    position: relative; width: 82%; max-width: 300px; aspect-ratio: 1 / 1;
+    border-radius: 18px; overflow: hidden;
+    border: 2px solid rgba(212,175,55,0.6);
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.2), 0 0 30px rgba(212,175,55,0.15), 0 20px 60px rgba(0,0,0,0.6);
+    transition: transform 0.5s ease; background: #0d0618;
+  }
+  .art-wrap.zoomed { transform: scale(1.18); z-index: 10; }
+  .art-wrap canvas { display: block; width: 100%; height: 100%; }
+
+  .caption { margin-top: 28px; text-align: center; padding: 0 10px; }
+  .caption h1 { font-size: 26px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(90deg, #f5e6b8, #d4af37, #f5e6b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+  .caption .sub { font-size: 12px; letter-spacing: 3px; color: rgba(212,175,55,0.8); margin-bottom: 16px; text-transform: uppercase; }
+  .caption .divider { width: 50px; height: 1px; margin: 0 auto 16px; background: linear-gradient(90deg, transparent, #d4af37, transparent); }
+  .caption p { font-size: 14px; line-height: 2; color: rgba(245,240,232,0.8); letter-spacing: 1px; }
+  .caption .tag { display: inline-block; margin-top: 16px; padding: 4px 14px; border: 1px solid rgba(212,175,55,0.4); border-radius: 999px; font-size: 12px; color: #e8d5a0; letter-spacing: 2px; }
+
+  .controls { position: fixed; bottom: 24px; right: 20px; z-index: 99; display: flex; gap: 10px; }
+  .ctrl-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(212,175,55,0.4); background: rgba(10,5,20,0.7); color: #d4af37; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(8px); transition: all 0.25s; }
+  .ctrl-btn:active { transform: scale(0.92); background: rgba(212,175,55,0.2); }
+
+  .start-overlay { position: fixed; inset: 0; z-index: 999; background: radial-gradient(circle at 50% 40%, #2a1040, #05020a); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease; }
+  .start-overlay.hidden { opacity: 0; pointer-events: none; }
+  .start-overlay h2 { font-size: 22px; letter-spacing: 6px; margin-bottom: 30px; background: linear-gradient(90deg, #f5e6b8, #d4af37, #f5e6b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .start-btn { padding: 14px 40px; border-radius: 999px; border: 1px solid rgba(212,175,55,0.6); background: rgba(212,175,55,0.1); color: #f5e6b8; font-size: 15px; letter-spacing: 4px; cursor: pointer; transition: all 0.3s; }
+  .start-btn:active { background: rgba(212,175,55,0.3); }
+  .music-tip { position: fixed; top: 16px; right: 20px; font-size: 11px; color: rgba(212,175,55,0.6); letter-spacing: 2px; z-index: 99; }
+</style>
+</head>
+<body>
+
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <div class="start-overlay" id="startOverlay">
+    <h2>符竣 · 个人名片</h2>
+    <button class="start-btn" id="startBtn">点击开启</button>
+  </div>
+
+  <div class="music-tip" id="musicTip">♪ 未播放</div>
+
+  <div class="stage" id="stage">
+    <div class="slides" id="slides"></div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-btn" id="toggleAuto">⏸</div>
+  </div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="方大同 - 特别的人.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const slidesData = [
+      {
+        img: 'mmexport1789710440079.jpg',
+        title: '符竣',
+        sub: 'INTRODUCTION',
+        desc: '来自南宁职业技术学院的一名跨境电商学生，用好奇心探索世界的每一个角落。',
+        tag: '跨境电商'
+      },
+      {
+        img: 'mmexport1789710443102.jpg',
+        title: '保持好奇',
+        sub: 'INTERESTS',
+        desc: '吹拉弹唱略有研究，对新事物保持好奇。喜欢抽象、喜欢创新，永远在折腾的路上。',
+        tag: '兴趣广泛'
+      },
+      {
+        img: 'mmexport1789710445236.jpg',
+        title: '吉他 & 唱歌',
+        sub: 'SKILLS',
+        desc: '一把吉他，一副嗓子，随时能来一段。用旋律表达情绪，用歌声连接彼此。',
+        tag: '🎸 音乐'
+      },
+      {
+        img: 'mmexport1789710447137.jpg',
+        title: '交个朋友？',
+        sub: 'CONTACT',
+        desc: '电话：18894727497<br>微信：f18894727497<br>QQ：3373735209<br>邮箱：3373735209@qq.com',
+        tag: '有帅哥美女想加我或合作，来 😁'
+      }
+    ];
+
+    let currentIndex = 0;
+    let isAutoPlaying = true;
+    let autoTimer = null;
+    const AUTO_INTERVAL = 6000;
+    let isZoomed = false;
+
+    const slidesEl = document.getElementById('slides');
+    const startOverlay = document.getElementById('startOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    const musicTip = document.getElementById('musicTip');
+    const toggleAuto = document.getElementById('toggleAuto');
+
+    const canvasList = [];
+
+    slidesData.forEach((data, idx) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide';
+      slide.dataset.index = idx;
+      slide.innerHTML = `
+        <div class="art-wrap">
+          <canvas width="600" height="600"></canvas>
+        </div>
+        <div class="caption">
+          <h1>${data.title}</h1>
+          <div class="sub">${data.sub}</div>
+          <div class="divider"></div>
+          <p>${data.desc}</p>
+          <div class="tag">${data.tag}</div>
+        </div>
+      `;
+      slidesEl.appendChild(slide);
+      canvasList.push(slide.querySelector('canvas'));
+    });
+
+    const slideEls = document.querySelectorAll('.slide');
+    slideEls[0].classList.add('active');
+
+    const imgCache = {};
+
+    slidesData.forEach((data, idx) => {
+      const img = new Image();
+      img.src = data.img;
+      img.onload = () => {
+        imgCache[idx] = img;
+        renderImage(canvasList[idx], img);
+      };
+      img.onerror = () => {
+        renderPlaceholder(canvasList[idx]);
+      };
+    });
+
+    function renderPlaceholder(canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#1a0a2e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#d4af37';
+      ctx.font = '24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('图片加载中...', canvas.width / 2, canvas.height / 2);
+    }
+
+    function renderImage(canvas, img) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+
+    function scatterEffect(canvas, img, callback) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const particles = [];
+      const cols = 40, rows = 40;
+      const cellW = w / cols, cellH = h / rows;
+
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (Math.random() > 0.6) continue;
+          particles.push({
+            x: x * cellW + Math.random() * cellW,
+            y: y * cellH + Math.random() * cellH,
+            vx: (Math.random() - 0.5) * 8,
+            vy: (Math.random() - 0.5) * 8 - 3,
+            size: Math.random() * 3 + 1,
+            color: 'rgba(212,175,55,' + (Math.random() * 0.5 + 0.3) + ')'
+          });
+        }
+      }
+
+      let frame = 0;
+      const totalFrames = 40;
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.globalAlpha = Math.max(0, 1 - frame / totalFrames * 1.5);
+        ctx.drawImage(img, 0, 0, w, h);
+        ctx.globalAlpha = 1;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.3;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+
+        frame++;
+        if (frame < totalFrames) {
+          requestAnimationFrame(animate);
+        } else {
+          callback && callback();
+        }
+      }
+      animate();
+    }
+
+    function goToSlide(nextIndex) {
+      if (nextIndex === currentIndex) return;
+      if (nextIndex < 0) nextIndex = slidesData.length - 1;
+      if (nextIndex >= slidesData.length) nextIndex = 0;
+
+      const currentSlide = slideEls[currentIndex];
+      const nextSlide = slideEls[nextIndex];
+
+      const currentCanvas = canvasList[currentIndex];
+      const currentImg = imgCache[currentIndex];
+      if (currentImg) scatterEffect(currentCanvas, currentImg);
+
+      currentSlide.classList.remove('active');
+      nextSlide.classList.add('active');
+      currentIndex = nextIndex;
+
+      resetAutoTimer();
+    }
+
+    function nextSlide() {
+      goToSlide(currentIndex + 1);
+    }
+
+    function resetAutoTimer() {
+      clearTimeout(autoTimer);
+      if (isAutoPlaying) {
+        autoTimer = setTimeout(nextSlide, AUTO_INTERVAL);
+      }
+    }
+
+    startBtn.addEventListener('click', () => {
+      startOverlay.classList.add('hidden');
+      bgMusic.play().then(() => {
+        musicTip.textContent = '♪ 播放中';
+        resetAutoTimer();
+      }).catch(() => {
+        musicTip.textContent = '♪ 点击播放';
+      });
+    });
+
+    slidesEl.addEventListener('click', (e) => {
+      const artWrap = e.target.closest('.art-wrap');
+      if (artWrap) {
+        if (!isZoomed) {
+          artWrap.classList.add('zoomed');
+          isZoomed = true;
+          clearTimeout(autoTimer);
+        } else {
+          artWrap.classList.remove('zoomed');
+          isZoomed = false;
+          resetAutoTimer();
+        }
+        return;
+      }
+      nextSlide();
+    });
+
+    toggleAuto.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isAutoPlaying = !isAutoPlaying;
+      if (isAutoPlaying) {
+        toggleAuto.textContent = '⏸';
+        resetAutoTimer();
+      } else {
+        toggleAuto.textContent = '▶';
+        clearTimeout(autoTimer);
+      }
+    });
+
+    musicTip.addEventListener('click', () => {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicTip.textContent = '♪ 播放中';
+      } else {
+        bgMusic.pause();
+        musicTip.textContent = '♪ 已暂停';
+      }
+    });
+  </script>
+</body>
+</html>
